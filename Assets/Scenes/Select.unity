@@ -1203,7 +1203,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 1
     m_VerticalOverflow: 1
     m_LineSpacing: 1
-  m_Text: Othello
+  m_Text: MiniGame
 --- !u!222 &2105732462
 CanvasRenderer:
   m_ObjectHideFlags: 0
