@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 [RequireComponent(typeof(Rigidbody2D),typeof(Collider2D))]
 public class PlayerBase : MonoBehaviour
 {
+    public float Speed => _speed;
+    public float DashSpeed => _dashSpeed;
+    public int Sanity => _sanity;
+
+
     [SerializeField]
     [Header("スピード")]
     float _speed;
@@ -21,6 +26,10 @@ public class PlayerBase : MonoBehaviour
     [SerializeField]
     [Header("ダッシュのクールタイム")]
     int _dashCoolTime;
+
+    [SerializeField]
+    [Header("正気度")]
+    int _sanity;
 
     Rigidbody2D _rb;
     List<ItemBase> _items = new List<ItemBase>();
@@ -42,14 +51,14 @@ public class PlayerBase : MonoBehaviour
         {
             Move();
         }
-        //if(Input.GetButtonDown(""))
-        //{
-        //    Item();
-        //}
-        //if(Input.GetButtonDown(""))
-        //{
-        //    HaveItemChange();
-        //}
+        if (Input.GetKey(KeyCode.E))
+        {
+            Item();
+        }
+        if (Input.GetKey(KeyCode.Q))
+        {
+            HaveItemChange();
+        }
     }
 
     void Move()
@@ -64,6 +73,10 @@ public class PlayerBase : MonoBehaviour
         if (_items[0].TryGetComponent(out IUseItem iu))
         {
             iu.UseItem();
+        }
+        else
+        {
+            Debug.Log("アイテムを持っていません");
         }
     }
 
@@ -94,11 +107,9 @@ public class PlayerBase : MonoBehaviour
         }
         if(!_canDash)
         {
-            Debug.Log("aaa");
             _dashTime = 0f;
             await Task.Delay(_dashCoolTime);
             _canDash = true;
-            Debug.Log("bbb");
         }
         var x = Input.GetAxisRaw("Horizontal");
         var y = Input.GetAxisRaw("Vertical");
