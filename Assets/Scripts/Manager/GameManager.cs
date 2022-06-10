@@ -7,6 +7,8 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     public GameObject GhostRoom { get; private set; }
     public GhostBase Ghost { get; private set; }
     public PlayerBase Player => _player;
+    public float Timer => _time;
+    public bool OpenDoor => _openDoor;
 
     [SerializeField]
     [Header("ゴースト")]
@@ -16,8 +18,15 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
     [Header("Playerのタグ")]
     string _playerTag;
 
+    float _time = 0f;
+    bool _openDoor = false;
     PlayerBase _player;
     List<GameObject> _rooms = new List<GameObject>();
+
+    private void Update()
+    {
+        _time += Time.deltaTime;
+    }
 
     public void GameStart()
     {
@@ -26,17 +35,22 @@ public class GameManager : SingletonMonoBehaviour<GameManager>
         PlayerSearch();
     }
 
-    private void GhostRoomDecision()
+    public void DoorOpen()
+    {
+        _openDoor = true;
+    }
+
+    void GhostRoomDecision()
     {
         GhostRoom = _rooms[Random.Range(0, _rooms.Count)];
     }
 
-    private void GhostDecision()
+    void GhostDecision()
     {
         Ghost = _ghosts[Random.Range(0, _ghosts.Length)];
     }
 
-    private void PlayerSearch()
+    void PlayerSearch()
     {
         _player = GameObject.FindWithTag(_playerTag).GetComponent<PlayerBase>();
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 using System.Threading.Tasks;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(Collider2D))]
-public class GhostBase : MonoBehaviour
+public class GhostBase : MonoBehaviour, IHunt
 {
     public int Speed => _speed;
     public bool IsHunt => _isHunt;
@@ -15,12 +15,8 @@ public class GhostBase : MonoBehaviour
     int _speed;
 
     [SerializeField]
-    [Header("ハントの時間")]
+    [Header("ハントの時間(ミリ秒)")]
     int _huntTime;
-
-    [SerializeField]
-    [Header("視界のコライダー")]
-    GameObject _visibilityCol;
 
     [SerializeField]
     [Header("徘徊するポイント")]
@@ -34,7 +30,7 @@ public class GhostBase : MonoBehaviour
     bool _isSawPlayer = false;
     Vector2 _playerPosition;
 
-    private void Update()
+    void Update()
     {
         if(_isHunt)
         {
@@ -46,19 +42,19 @@ public class GhostBase : MonoBehaviour
         }
     }
         
-    public async void StartHuntMode()
+    async void StartHuntMode()
     {
         _isHunt = true;
         await Task.Delay(_huntTime);
         _isHunt = false;
     }
 
-    private void Wandering()
+    void Wandering()
     {
 
     }
 
-    private void HuntMode()
+    void HuntMode()
     {
         if(_isSawPlayer)
         {
@@ -70,7 +66,7 @@ public class GhostBase : MonoBehaviour
         }
     }
 
-    private void Hunting()
+    void Hunting()
     {
 
     }
@@ -79,5 +75,10 @@ public class GhostBase : MonoBehaviour
     {
         _isSawPlayer = true;
         _playerPosition = player.gameObject.transform.position;
+    }
+
+    public void Hunt()
+    {
+        StartHuntMode();
     }
 }

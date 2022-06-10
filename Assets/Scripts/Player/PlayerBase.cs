@@ -31,9 +31,15 @@ public class PlayerBase : MonoBehaviour
     [Header("正気度")]
     int _sanity;
 
+    [SerializeField]
+    [Header("正気度が減る時間")]
+    float _santyDecreaseTime;
+
     Rigidbody2D _rb;
     List<ItemBase> _items = new List<ItemBase>();
     float _dashTime = 0f;
+    float _brightPlaceTimer = 0f;
+    float _darkPlaceTimer = 0f;
     bool _canDash = true;
 
     private void Awake()
@@ -59,6 +65,7 @@ public class PlayerBase : MonoBehaviour
         {
             HaveItemChange();
         }
+        SanityUpdate();
     }
 
     void Move()
@@ -114,5 +121,27 @@ public class PlayerBase : MonoBehaviour
         var x = Input.GetAxisRaw("Horizontal");
         var y = Input.GetAxisRaw("Vertical");
         _rb.velocity = new Vector2(x, y).normalized * _dashSpeed;
+    }
+
+    void SanityUpdate()
+    {
+        if (GameManager.Instance.OpenDoor) return;
+        if(RoomManager.Instance.IsLight)
+        {
+            _brightPlaceTimer += Time.deltaTime;
+        }
+        else
+        {
+            _darkPlaceTimer += Time.deltaTime;
+        }
+        if(_brightPlaceTimer + _darkPlaceTimer > _santyDecreaseTime)
+        {
+            SanityDecrease(1);
+        }
+    }
+
+    public void SanityDecrease(int num)
+    {
+        _sanity -= num;
     }
 }
