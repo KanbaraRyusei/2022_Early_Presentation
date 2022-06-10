@@ -26,6 +26,14 @@ public class GhostBase : MonoBehaviour, IHunt
     [Header("証拠")]
     string[] _evidence;
 
+    [SerializeField]
+    [Header("Playerのタグ")]
+    string _playerTag;
+
+    [SerializeField]
+    [Header("アイテムのタグ")]
+    string _itemTag;
+
     bool _isHunt = false;
     bool _isSawPlayer = false;
     Vector2 _playerPosition;
@@ -45,8 +53,11 @@ public class GhostBase : MonoBehaviour, IHunt
     async void StartHuntMode()
     {
         _isHunt = true;
+        gameObject.layer = 7;
         await Task.Delay(_huntTime);
         _isHunt = false;
+        gameObject.layer = 6;
+        _isSawPlayer = false;
     }
 
     void Wandering()
@@ -71,14 +82,32 @@ public class GhostBase : MonoBehaviour, IHunt
 
     }
 
-    public void FoundPlayer(PlayerBase player)
+    public void FoundPlayer(GameObject player)
     {
         _isSawPlayer = true;
-        _playerPosition = player.gameObject.transform.position;
+        _playerPosition = player.transform.position;
     }
 
     public void Hunt()
     {
         StartHuntMode();
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == _itemTag)
+        {
+
+        }
+        if (!_isHunt) return;
+        if(collision.tag == _playerTag)
+        {
+            _isSawPlayer = true;
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+
     }
 }

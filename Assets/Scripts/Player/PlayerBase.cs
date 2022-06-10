@@ -35,12 +35,22 @@ public class PlayerBase : MonoBehaviour
     [Header("正気度が減る時間")]
     float _santyDecreaseTime;
 
+    [SerializeField]
+    [Header("アイテムのタグ")]
+    string _itemTag;
+
+    [SerializeField]
+    [Header("アイテムを投げる強さ")]
+    Vector2 _itemThrowSpeed;
+
     Rigidbody2D _rb;
     List<ItemBase> _items = new List<ItemBase>();
+    GameObject _item;
     float _dashTime = 0f;
     float _brightPlaceTimer = 0f;
     float _darkPlaceTimer = 0f;
     bool _canDash = true;
+    bool _canTakeItem = false;
 
     private void Awake()
     {
@@ -64,6 +74,10 @@ public class PlayerBase : MonoBehaviour
         if (Input.GetKey(KeyCode.Q))
         {
             HaveItemChange();
+        }
+        if(Input.GetMouseButton(1))
+        {
+            ItemPickUp();
         }
         SanityUpdate();
     }
@@ -105,6 +119,26 @@ public class PlayerBase : MonoBehaviour
         }
     }
 
+    void ItemPickUp()
+    {
+        if(_canTakeItem)
+        {
+            if(_item.TryGetComponent(out ItemBase ib) && !ib.IsTake)
+            {
+                ib.TakeItem();
+                if(_items.Count < 3)
+                {
+                    _items.Add(ib);
+                }
+                else
+                {
+                    _items[0] = ib;
+                    
+                }
+            }
+        }
+    }
+
     async void Dash()
     {
         _dashTime += Time.deltaTime;
@@ -140,8 +174,41 @@ public class PlayerBase : MonoBehaviour
         }
     }
 
+    void ChangeItem(ItemBase ib)
+    {
+        var haveItem = _items[0];
+        _items[0] = ib;
+
+    }
+
+    void ItemThrowOut(ItemBase ib)
+    {
+        var i = Instantiate(ib, transform.position, Quaternion.identity);
+        if(i.TryGetComponent(out Rigidbody2D rb))
+        {
+            rb.AddForce(_itemThrowSpeed, ForceMode2D.Impulse);
+        }
+    }
+
     public void SanityDecrease(int num)
     {
         _sanity -= num;
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if(collision.tag == _itemTag)
+        {
+            _canTakeItem = true;
+            _item = collision.gameObject;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if(collision.tag ==_itemTag)
+        {
+            _canTakeItem = false;
+        }
     }
 }
